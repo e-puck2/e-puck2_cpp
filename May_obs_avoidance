@@ -1,0 +1,120 @@
+unsigned short MAZE[55][55];
+int x,y;
+
+void initializeArray (void) {
+int i,j;
+	for (i=0;i<55;i++) {
+			for(j=0;j<55;j++){
+				MAZE[i][j] = 0;
+			}
+	}
+}
+
+void speed_motors (int speed_left, int speed_right, int steps) {
+
+	int motor1A = 0 , motor1B = 0, motor1C = 0, motor1D = 0, 
+		motor2A = 0, motor2B = 0, motor2C = 0, motor2D = 0;
+	long i,k;
+
+				for(k=0;k<steps;k++) {
+							e_set_speed_right(speed_right);
+							e_set_speed_left(speed_left);
+			
+							MOTOR1_PHA = motor1A;
+							for(i=0;i<500;i++) 
+									asm("nop");
+							
+							MOTOR1_PHB = motor1B;
+							for(i=0;i<500;i++) 
+									asm("nop");
+			
+							MOTOR1_PHC = motor1C;
+							for(i=0;i<500;i++) 
+									asm("nop");
+			
+							MOTOR1_PHD = motor1D;
+							for(i=0;i<500;i++) 
+									asm("nop");
+			
+							MOTOR2_PHA = motor2A;
+							for(i=0;i<500;i++) 
+									asm("nop");
+			
+							MOTOR2_PHB = motor2B;
+							for(i=0;i<500;i++) 
+									asm("nop");
+			
+							MOTOR2_PHC = motor2C;
+							for(i=0;i<500;i++) 
+									asm("nop");
+						
+							MOTOR2_PHD = motor2D;
+							for(i=0;i<500;i++) 
+									asm("nop");
+				}
+}
+
+int main(void)
+{
+  	double value0, value1, value2, value3, value4, value5, value6, value7;
+	int map = 0, led = 0, value0_A, value1_A, value2_A, value3_A, value4_A, value5_A, value6_A, value7_A;
+	double sensorValue;
+	long i,j,k;
+
+	double distance = 0, revolutions = 0, temp_left = 0, 
+			temp_right = 0, steps_left = 0, steps_right = 0;
+
+	e_init_port();
+  	e_init_prox();
+	e_init_motors();
+	
+	if(RCONbits.POR) { // reset if power on (a problem for some robots).
+		RCONbits.POR=0; // RCONbits is defined in the p30f6014a.h file.
+		RESET();
+	}
+
+	initializeArray();
+	x = 15; // random start position for x
+	y = 2; // rounded radius of e-puck
+
+  	while(1)
+  	{	
+		value0 = e_get_prox(0);
+		value1 = e_get_prox(1);
+		value2 = e_get_prox(2);
+		value3 = e_get_prox(3);	
+		value4 = e_get_prox(4);	
+		value5 = e_get_prox(5);
+		value6 = e_get_prox(6);
+		value7 = e_get_prox(7);		
+
+		if (value6 > 1000 && value7 > 1000) {
+
+				e_set_speed_right(-200);
+				e_set_speed_left(200);
+				for(k=0; k<30000; k++) { asm("nop"); }
+
+		} else if (value2 > 1000 || value0 > 1000 || value1 > 1000 || value7 > 1000) {	
+					
+				e_set_speed_right(200);
+				e_set_speed_left(-200);
+				for(k=0; k<30000; k++) { asm("nop"); }
+
+		} else if (value5 > 1000 || value6 > 1000) {
+
+				e_set_speed_right(-200);
+				e_set_speed_left(200);
+					
+				for(k=0; k<30000; k++) { asm("nop"); }
+			
+		} else if (value2 < 1000 && value0 < 1000 && value1 < 1000 && value7 < 1000 && value5 < 1000 && value6 < 1000) {
+
+				e_set_speed_right(500);
+				e_set_speed_left(500);
+					
+				for(k=0; k<30000; k++) { asm("nop"); }
+
+		} else {}
+
+	}	
+}
